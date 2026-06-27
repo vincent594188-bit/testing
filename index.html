@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+    <canvas id="canva1" width="1200" height="400"></canvas>
+</body>
+
+<head>
+
+<style>
+    #canva1{
+        border:3px solid #000000;
+        background-color: #ffffff;
+    }
+</style>
+
+</head>
+
+<script>
+    var game=0;
+    var gamestart=false;
+    var AABBflg=true;
+    var jump=0;
+    var jumpY=10;
+    var Y=320;
+    var bl=[];
+    var tick=0;
+    var blspawn=Math.random()*10+50;
+    var canvas=document.getElementById("canva1");
+    var ctx=canvas.getContext("2d");
+
+    document.addEventListener('mousedown',(e)=>{
+        if (gamestart==false){
+            gamestart=true;
+            bl=[];
+            tick=0;
+            Y=320;
+            game=setInterval(update,20);
+        }
+        else{
+            if (jump<2){
+                jump+=1;
+                jumpY=22;
+            }
+        }
+    });
+
+    function AABB(xmin1,ymin1,xmax1,ymax1,xmin2,ymin2,xmax2,ymax2){
+        AABBflg=false;
+        if(xmin1<xmax2 && xmin2<xmax1 && ymin1<ymax2 && ymin2<ymax1){
+            AABBflg=true;
+        }
+    }
+
+    ctx.fillStyle="#000000";
+    ctx.font='30px Arial';
+
+    ctx.fillText("CLICK TO START",480,200); 
+
+    function update(){
+        tick+=1;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (jump>0){
+            Y-=jumpY;
+            jumpY-=2;
+            if (Y>=320){
+                jump=0;
+                Y=320;
+            }
+        }
+        ctx.fillRect(200,Y,40,80);
+        for (var i=0;i<bl.length;i++){
+            bl[i].x-=10;
+            ctx.fillRect(bl[i].x,bl[i].y,bl[i].w,bl[i].h); 
+            AABB(200,Y,240,Y+80,bl[i].x,bl[i].y,bl[i].x+bl[i].w,bl[i].y+bl[i].h);
+            if (AABBflg){
+                gamestart=false;
+                ctx.fillText("LOSE",560,200); 
+                ctx.fillText("CLICK TO TRY AGAIN",440,260); 
+                clearInterval(game);
+            }
+        }
+
+
+
+        if (tick>=blspawn){
+            tick=0;
+            blspawn=Math.random()*10+50;
+            ran=Math.random()*5;
+            if (ran<=1){bl.push({x:1200,y:360,w:40,h:40})}
+            else if (ran<=2){bl.push({x:1200,y:280,w:40,h:120})}
+            else if (ran<=3){bl.push({x:1200,y:380,w:120,h:20})}
+            else if (ran<=4){bl.push({x:1200,y:0,w:40,h:300})}
+            else if (ran<=5){
+                bl.push({x:1200,y:360,w:40,h:40});
+                bl.push({x:1240,y:280,w:40,h:120});
+                bl.push({x:1280,y:360,w:40,h:40});
+            }
+        }
+
+    }
+</script>
+
+</html>
